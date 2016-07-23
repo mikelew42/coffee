@@ -44,5 +44,9 @@ describe("mod", function(){
 
 		mod1.set({ two: 6 });
 		expect(arg1).toBe(6);
+
+		mod1.set({ two: function(t){ test = t; } });
+		mod1.set({ two: 456 });
+		expect(test).toBe(456);
 	});
 });

@@ -4,13 +4,13 @@ var is = require("../is");
 	COPY
 *************/
 var getBase = function(value){
-	return (value.Base && value.Base()) || 
-			(is.obj(value) && {}) || 
+	// return (value.Base && value.Base()) || 
+	return (is.obj(value) && {}) || 
 			(is.arr(value) && []);
 };
 
 var returnable = function(value){
-	return !is.def(value) || is.val(value) || (is.fn(value) && !value.Base);
+	return !is.def(value) || is.val(value) || (is.fn(value) && !value.set);
 };
 
 var copy = function(value, base, skip){
