@@ -11,7 +11,7 @@ describe("view", function(){
 		expect(myView.set).toBeDefined();
 	});
 
-	it("should take x y z as view children", function(){
+	xit("should take x y z as view children", function(){
 		// "str", jQuery, DOM, View(.render), mod, Symstring(.toString)
 
 		// and arrays of these...
@@ -40,7 +40,7 @@ describe("view", function(){
 		expect($("div:contains('Hello')")[0]).toBe(v2.$el[0]);
 	});
 
-	it("should allow classes", function(){
+	it("should allow css classes", function(){
 		var v1 = view({
 			addClass: "one two three"
 		}, "yo");
@@ -53,13 +53,13 @@ describe("view", function(){
 		expect($query.hasClass('one two three')).toBe(true);
 	});
 
-	it("should allow nesting", function(){
+	xit("should allow nesting", function(){
 		var post = view({
 			factory: true
 		})
 	});
 
-	it("should have variables", function(){
+	xit("should have variables", function(){
 		var title = function(){}, v = view({
 			normalProps: "123",
 			symStr: "...",
@@ -85,6 +85,114 @@ describe("view", function(){
 		v.resetAll();
 		// or
 		v.reset();
+
+		// what if reset/resetAll could be a method, so you can use predefined
+		// sub templates?
+		v.reset = function(){
+			return view() || [view(), view(), view()]
+			// return view({classes: "root"},
+			// 	this.preview({ classes: "addAClass" }),
+			// 	this.content.addClass('new-class').children().children.reset();
+			// );
+		};
+
+		var v = view({
+			root: view().classes('root'),
+			preview: view().classes('preview'),
+			title: view("This is a Title"),
+			icon: icon("beer"),
+			content: view().classes('content'),
+			// when trying to override children coll with a function, this one should intercept the fn
+			// and run it, and pass its return values to "set"
+			children: function(){
+				return this.root(
+					this.preview || this.preview(this.icon, this.title), // both return the sfn object..
+					this.content("Weee")
+				);
+			}
+		});
+
+		var prop = view.$prop = function(name){
+			return {
+				__propName: name
+			}
+		};
+
+		var v = view({
+			root: view(),
+			preview: view(),
+			title: view(),
+			icon: icon(),
+			content: view()
+		},
+			// ewww
+			prop('root',
+				prop('preview', prop('icon'), prop(''))
+			)
+		);
+
+		// i suppose all these views could be assigned as props automatically, but the need a "type"
+		view("item", {
+			optional: "props"
+		}, 
+			view("preview", icon("beer"), view("title", "Here's a title"))
+		);
+
+		// this restricts you to have 1 view for the root, rather than have an array of root items
+		// also, i really don't like the way the children look above, they're just kinda floating in
+		// no mans land
+
+		// maybe the best option is to use the children property when using an object:
+
+		view("item", {
+			optional: "props",
+			children: view() || [view(), view()]
+		});
+
+		view("css-class", {}, "content");
+		//vs/
+		view("jsPropAndClass", { // THIS CAN BE A SPECIAL CSS CLASS:  THE VIEW.TYPE
+			children: "Simple String Content"
+		});
+
+		// if you're adding views to other views:
+		var v = view(view("title", "My Title"), view("desc", "Description"));
+		v.title == view("title", "My Title");
+		v.desc == view("desc", "Description");
+
+		// ROOT VS ABSTRACT
+		// does that mean the root view defines the classes?
+		// i suppose you could toggle a "renderRoot" property, to not render self, and return an array
+		// of children
+
+		view({
+			abstract: true, // this view isn't rendered directly
+			children: [] // when rendered, returns the array of rendered children
+		});
+
+		//vs normal:
+
+		var v = view("classes", {
+			classes: "either way", // this view is the root, and children are added to it, in order
+			children: [view(), view( view(), view() )]
+		})
+
+
+		// view()--> set --> set children should remain, so you can do
+		view( view(), view() )
+
+		// one str --> defaults to children.set
+		view("Children");
+		// this works well for simple text views:
+		title("My Title");
+
+		// two strings --> first is classes.set(), second is children.set()
+		view("classes", "Children");
+		title("add-class", "My Title");
+
+
+		// can view.classes.remove() return the view?  sure why not
+		title("My Title").classes("add").classes.remove("one")
 	});
 
 	it("should allow override of .set to use .reset", function(){
@@ -95,7 +203,7 @@ describe("view", function(){
 		});
 	});
 
-	describe("should allow 'extending' the views children", function(){
+	xdescribe("should allow 'extending' the views children", function(){
 		it("should use .children <== coll", function(){
 			// most methods come from shared base class
 		});

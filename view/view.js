@@ -11,7 +11,7 @@ var view = sfn({
 	class: [],
 	children: [],
 	attr: [],
-	set: function(){
+	set: Object.assign(function(){
 		if (arguments.length){
 			for (var i = 0; i < arguments.length; i++){
 				// if !jQuery, DOM, SymStr, etc...
@@ -20,7 +20,7 @@ var view = sfn({
 				mod.set.setArg(this, arguments[i]);
 			}
 		}
-	},
+	}, mod.set),
 	setStr: function(str){
 		this.addChild(str);
 	},
@@ -55,6 +55,6 @@ var view = sfn({
 	}
 });
 
-Object.assign(view.set, mod.set);
+// Object.assign(view.set, mod.set);
 
 module.exports = view;

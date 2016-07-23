@@ -1,0 +1,30 @@
+Copying sfn properties
+$p ref?
+$p.aliasing
+init
+
+Copying should be the same process as creating the thing again from scratch.
+
+For the views, we can store the sub views as properties, or store them on the children collection, and alias them back.  The aliases need to be denoted as references.  We could use the $prefix to denote a private var not to be copied directly, but then you might have some actual props that are views, that need to be copied.
+
+Also, if you define the view as an embedded child (not a reference), and then add it to the children coll, the children coll needs to add it as a reference, and get the value back from the parent.
+
+Rather than have a .props object, each sfn could have its own settings for whether it is embedded.
+
+This won't work though. If you assign the sfn as a reference to another object, such as embedding a view in the view's children coll, you can't set it as a reference...
+
+Unless the flag for whether an item is a reference, is whether it's .$p === itself...
+
+We could use the general rule of thumb that says 
+1) auto embed (adopt), so when you assign a property that doesn't have a parent, set the child.$parent or just $p? 
+
+
+
+
+
+aside: what are the advantages of Object.defining a property?
+the getter/setters were useful, but i'm trying to remember for what.  it seems that anything you could do with a getter/setter, you could just use the sfn.
+
+aside: storage.  does every module need a path?  right now, we define modules in folders, and the folder tree is flat.  it might not always be flat.  but, the module directories could resemble the storage object
+
+in the actual runtime

@@ -1,0 +1,38 @@
+SET ALGORITHM
+I have a switching algorithm that I need to extend.  Importing all the pieces is a little wonky, and repetitive.
+
+I could use an event-like array of conditions and their handlers:
+
+mod.set.add(function(mod, arg){
+	check condition, and handle it
+	return false if we're not interested in handling it
+	return true after we're done handling it
+
+	or, return true to continue
+	and return false to halt?
+})
+
+This would work, but.. you don't have great visibility as you extend on down the line.
+
+Alternatives?
+Recreate the setArg fn?
+
+
+view("Child/content");
+view("type", "Child/content");
+view("type", {}, "Child/content");
+
+generic: [ [] ]
+
+There are several ways to process the list.
+- piecewise: start from the beginning or end, and go arg by arg, one at a time
+- signature:  if you can recognize a specific signature:
+	- args.length > 3
+	- arg[1].type === "str"
+
+
+Could we use .set = sfn({
+	str, fn, num, obj, etc
+});
+
+sfn have to be reinitialized upon copying...

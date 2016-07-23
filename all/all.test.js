@@ -1,0 +1,5 @@
+require("../is/is.test")
+require("../copy/copy.test")
+require("../mod/mod.test")
+require("../sfn/sfn.test")
+require("../view/view.test")
