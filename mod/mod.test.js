@@ -15,6 +15,28 @@ describe("mod", function(){
 		// expect(mod.install).toBeDefined();
 	});
 
+	it("should have a set sfn that .$parent references self", function(){
+		console.log(mod);
+		var m = mod.copy();
+
+		expect(mod.set.$parent).toBe(mod);
+		expect(m.set.$parent).toBe(m);
+	});
+
+	it("should copy", function(){
+		var m = mod.copy({
+			test: 123
+		});
+
+		var m2 = m.copy({
+			test2: 234
+		});
+
+		expect(m2.test).toBe(123);
+		expect(m2.test2).toBe(234);
+	});
+
+
 	it("should have an awesome set algorithm", function(){
 		var arg1, arg2, test, mod1 = mod.copy({
 			one: 1,
@@ -48,5 +70,51 @@ describe("mod", function(){
 		mod1.set({ two: function(t){ test = t; } });
 		mod1.set({ two: 456 });
 		expect(test).toBe(456);
+	});
+
+
+
+	it("should persist $parent refs", function(){
+		var m = mod.copy({
+			prop: 1,
+			sub: mod.copy({
+				subSub: 2
+			})
+		});
+
+		m.sub.$parent = m;
+
+		var m2 = m.copy();
+
+		expect(m2.sub.$parent).toBe(m2);
+
+		// deep copying
+		var m3 = m.copy({
+			prop: 2,
+			sub: {
+				subSub2: 3
+			}
+		});
+
+		expect(m3.sub.subSub2).toBe(3);
+		expect(m3.sub.subSub).toBe(2);
+		expect(m3.sub).not.toBe(m.sub);
+		expect(m3.sub.$parent).toBe(m3);
+	});
+
+	it("should init with $parent ref", function(){
+		var test, m = mod.copy({
+			sub: mod.copy({
+				init: function(){
+					test = this.$parent
+				}
+			})
+		});
+
+		m.sub.$parent = m;
+
+		var m2 = m.copy();
+
+		expect(test).toBe(m2);
 	});
 });

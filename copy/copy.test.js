@@ -74,5 +74,4 @@ describe("copy.oo", function(){
 
 		expect(objCopy).toEqual(obj);
 	});
-
 });

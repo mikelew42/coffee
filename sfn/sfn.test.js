@@ -98,4 +98,16 @@ describe("sfn", function(){
 		expect(s5).not.toBe(s4);
 		expect(s5.newNewProp).toBe(13);
 	});
+
+	it("should allow $parent refs", function(){
+		var s = sfn();
+		s({
+			child: sfn({
+				$parent: s
+			})
+		})
+
+		var s2 = s.copy();
+		expect(s2.child.$parent).toBe(s2);
+	});
 });

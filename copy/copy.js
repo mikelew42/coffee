@@ -10,7 +10,7 @@ var getBase = function(value){
 };
 
 var returnable = function(value){
-	return !is.def(value) || is.val(value) || (is.fn(value) && !value.set);
+	return !is.def(value) || is.val(value) || (is.fn(value) && !value.copy);
 };
 
 var copy = function(value, base, skip){
@@ -25,19 +25,58 @@ var copy = function(value, base, skip){
 	for (var i in value){
 		if (i[0] === "$")
 			continue;
-		base[i] = copy(value[i], null);
+		
+		/* Note, this only works for modules, that have a .set method */
+		if (value[i] && 
+			value[i].$parent &&
+			value[i].$parent === value){
+
+				if (value[i].copy){
+					base[i] = value[i].copy({
+						$parent: base
+					});
+				} else {
+					base[i] = copy.oo.call(value[i], {
+						$parent: base
+					})
+				}
+
+		} else {
+			base[i] = copy(value[i], null);
+		}
+
+
+		/* a problem here, is that if the value[i] has .copy, then
+		it will get called.  the base[i] new copy will also be initialized
+		before this gets applied:
+		*/
+
+		// if (value[i] && value[i].$parent && value[i].$parent === value)
+		// 	base[i].$parent = base;
 	}
 
 	return base;
 };
 
-copy.oo = function(){
-	return copy(this, null, true);
+copy.oo = function(o){
+	var c = copy(this, null, true);
+	if (c.set){
+		c.set.apply(c, arguments); // create a standalone set implementation, so modules don't have to implement it?
+	} else {
+		Object.assign(c, o);
+	}
+	if (o && !o.factory) delete c.factory;
+	c.init && c.init();
+	return c;
 };
 
-copy.to = function(base){
-	return copy(this, base, true);
-};
+// copy.oo = function(){
+// 	return copy(this, null, true);
+// };
+
+// copy.to = function(base){
+// 	return copy(this, base, true);
+// };
 
 /* 
 
@@ -80,10 +119,14 @@ var copyIterate = function(value, base){
 
 	for (var i in value){
 		log && console.log(i);
+
 		if (i[0] === "$" || propsKeys.indexOf(i) > -1)
-			continue;
+			continue;	
 		
 		base[i] = copy2(value[i]);
+
+		if (value[i] && value[i].$parent && value[i].$parent === value)
+			base[i].$parent = base;
 	}
 
 	if (base.props){ // copied from value onto base...
@@ -118,9 +161,6 @@ copy2.oo = function(){
 copy2.to = function(base){
 	return stdCopy(this, base);
 };
-
-
-
 
 copy.copy2 = copy2;
 module.exports = copy;
