@@ -38,6 +38,7 @@ describe("view", function(){
 		v2.render().appendTo("body");
 
 		expect($("div:contains('Hello')")[0]).toBe(v2.$el[0]);
+		v2.$el.remove();
 	});
 
 	it("should allow css classes", function(){
@@ -51,6 +52,7 @@ describe("view", function(){
 
 		expect($query[0]).toBe(v1.$el[0]);
 		expect($query.hasClass('one two three')).toBe(true);
+		v1.$el.remove();
 	});
 
 	xit("should allow nesting", function(){
@@ -75,6 +77,11 @@ describe("view", function(){
 			v.child2,
 			v.child3
 		));
+		// v.reset could be v.classes.clear(), v.attr.clear(), and v.children.clear();
+		// or, we could use
+		v.children.reset(/* ... */); // to be more explicit
+
+
 
 		// but, this would just add the children to v.root, again. to reset 
 		// v.root also, you'd have to use v.root.reset();
@@ -98,7 +105,7 @@ describe("view", function(){
 
 		var v = view({
 			root: view().classes('root'),
-			preview: view().classes('preview'),
+			preview: view({ classes: "preview" }),
 			title: view("This is a Title"),
 			icon: icon("beer"),
 			content: view().classes('content'),
@@ -189,6 +196,15 @@ describe("view", function(){
 		// two strings --> first is classes.set(), second is children.set()
 		view("classes", "Children");
 		title("add-class", "My Title");
+
+		// then we can't do
+		view("child1", "child2");
+		// which would only be useful if you were logging a variable or something...
+		view("Label: ", myVar); // myVar could be a str, num, or anything...
+		// if myVar happened to be a str, then we'd get wonky results (Label: would be a class)
+
+		// two+ args, first is classes?
+		view("classes", { prop: 1 }, view(), "child");
 
 
 		// can view.classes.remove() return the view?  sure why not

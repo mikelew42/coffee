@@ -12,13 +12,15 @@ describe("sfn", function(){
 	});
 
 	it("should set a fn to main, and invoke it", function(){
-		var test, s2 = sfn(function(){
-			test = true
+		var called, ctx, s2 = sfn(function(){
+			called = true;
+			ctx = this;
 		});
 
 		s2();
 
-		expect(test).toBe(true)
+		expect(called).toBe(true);
+		expect(ctx).toBe(s2);
 	});
 
 	it("should assign props to itself", function(){
