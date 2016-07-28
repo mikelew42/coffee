@@ -11,18 +11,13 @@ var view = sfn({
 	class: [],
 	children: [],
 	attr: [],
-	set: Object.assign(function(){
-		if (arguments.length){
-			for (var i = 0; i < arguments.length; i++){
-				// if !jQuery, DOM, SymStr, etc...
-				if (arguments[i] && arguments[i].render)
-					this.addChild(arguments[i])
-				mod.set.setArg(this, arguments[i]);
-			}
+	set: {
+		arg: function(arg){
+			if (arg && (is.str(arg) || arg.render))
+				return this.$parent.addChild(arg);
+			else 
+				return this._set.arg(this.$parent, arg);
 		}
-	}, mod.set),
-	setStr: function(str){
-		this.addChild(str);
 	},
 	init: function(){
 		this.initView();
@@ -36,6 +31,12 @@ var view = sfn({
 		this.class.push(c);
 	},
 	render: function(){
+		if (this.$el)
+			return this.$el;
+		else
+			return this.rerender();
+	},
+	rerender: function(){
 		this.$el = $("<" + this.tag + ">").addClass(this.class.join(" "));
 		this.renderChildren();
 		return this.$el;

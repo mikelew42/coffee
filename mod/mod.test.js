@@ -16,7 +16,6 @@ describe("mod", function(){
 	});
 
 	it("should have a set sfn that .$parent references self", function(){
-		console.log(mod);
 		var m = mod.copy();
 
 		expect(mod.set.$parent).toBe(mod);

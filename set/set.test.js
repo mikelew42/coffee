@@ -28,22 +28,22 @@ describe("set", function(){
 			}
 		}, testInvoke, testArg, testObj, testFnProp;
 
-		mod.set = set.oo.copy(function(){
+		mod.set = set.$oo.copy(function(){
 			testInvoke = true;
-			set.oo.invoke.apply(this, arguments);
+			set.$oo.invoke.apply(this, arguments);
 		}, {
 			$parent: mod,
 			arg: function(arg){
 				testArg = true;
-				set.oo.arg.apply(this, arguments);
+				set.$oo.arg.apply(this, arguments);
 			},
 			obj: function(obj){
 				testObj = true;
-				set.oo.obj.apply(this, arguments);
+				set.$oo.obj.apply(this, arguments);
 			},
 			fnProp: function(){
 				testFnProp = true;
-				set.oo.fnProp.apply(this, arguments);	
+				set.$oo.fnProp.apply(this, arguments);	
 			}
 		});
 

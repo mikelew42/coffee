@@ -44,11 +44,9 @@ var mod = module.exports = {
 
 
 
-mod.set = set.oo.copy({
+mod.set = set.$oo.copy({
 	$parent: mod
 });
-
-console.log(mod.set.$parent === mod);
 
 // mod.set.setArg = function(mod, arg){
 // 	// type switch

@@ -30,6 +30,7 @@ var set = sfn(function(mod){
 	for (var i = 0; i < args.length; i++){
 		this.arg(mod, args[i]);
 	}
+	return mod;
 }, {
 	arg: function(mod, arg){
 		// type switch
@@ -78,20 +79,22 @@ var set = sfn(function(mod){
 	}
 });
 
-set.oo = sfn(function(){
+set.$oo = sfn(function(){
 	for (var i = 0; i < arguments.length; i++){
 		this.arg(arguments[i]);
 	}
+	return this.$parent;
 }, {
 	arg: function(arg){
-		set.arg(this.$parent, arg);
+		this._set.arg(this.$parent, arg);
 	},
 	obj: function(obj){
-		set.obj(this.$parent, obj);
+		this._set.obj(this.$parent, obj);
 	},
 	fnProp: function(i, obj){
-		set.fnProp(this.$parent, i, obj);
-	}
+		this._set.fnProp(this.$parent, i, obj);
+	},
+	_set: set
 });
 
 /*
