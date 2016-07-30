@@ -10,7 +10,7 @@ var files = globule.find("./**/*.test.js", "!./node_modules/**", "!./jasmine/**"
 });
 
 module.exports = {
-  devtool: 'source-map',
+  devtool: 'inline-source-map',
   entry: entry,
   output: {
     path: './',

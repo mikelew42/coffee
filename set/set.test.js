@@ -21,6 +21,15 @@ describe("set", function(){
 
 		expect(test).toBe(456);
 	});
+
+	it("should set $parent ref if adopt flag is set", function(){
+		var obj = {}, sub = { adopt: true };
+
+		set(obj, { sub: sub });
+
+		expect(obj.sub.$parent).toBe(obj);
+	});
+
 	it("should work for a mod.set oo implementation", function(){
 		var testMethod, mod = {
 			method: function(){
@@ -49,7 +58,8 @@ describe("set", function(){
 
 		mod.set({
 			test: 1,
-			method: [4, 5, 6]
+			method: [4, 5, 6],
+			sub: { adopt: true }
 		});
 
 		expect(testMethod[0]).toBe(4);
@@ -59,5 +69,6 @@ describe("set", function(){
 		expect(testObj).toBe(true);
 		expect(testFnProp).toBe(true);
 		expect(mod.test).toBe(1);
+		expect(mod.sub.$parent).toBe(mod);
 	});
 });

@@ -2,6 +2,7 @@ require("../jasmine");
 var is = require("../is");
 var view = require("./view");
 var $ = require("jquery");
+require("logger/index.js");
 
 describe("view", function(){
 	it("should create a sfn", function(){
@@ -9,6 +10,7 @@ describe("view", function(){
 
 		expect(is.fn(myView)).toBe(true);
 		expect(myView.set).toBeDefined();
+		expect(myView.children.$parent).toBe(myView);
 	});
 
 	xit("should take x y z as view children", function(){
@@ -25,6 +27,9 @@ describe("view", function(){
 
 	it("should render a jQuery element as it's .$el", function(){
 		var v = view("Hello");
+
+		expect(v.children.$parent).toBe(v);
+
 		v.render().appendTo("body");
 
 		var $query = $("div:contains('Hello')");
@@ -53,6 +58,83 @@ describe("view", function(){
 		expect($query[0]).toBe(v1.$el[0]);
 		expect($query.hasClass('one two three')).toBe(true);
 		v1.$el.remove();
+	});
+
+	it("should be copyable", function(){
+		var one = view("one");
+		var two = view('two', { type: "two" });
+		var v = view(one, two);
+
+		expect(v.children.$parent).toBe(v);
+		// console.dir(v);
+		expect(v.children.items[0].$parent).toBe(v.children);
+
+		v.children.each(function(child, name, index){
+			log.group('v.children.items.item');
+			console.dir(child);
+			log.end();
+
+
+			// anonymous views won't have a parent
+			if (child.$parent)
+				expect(child.$parent).toBe(v);
+		});
+
+		v.children.eachItem(function(item, index){
+			expect(item.$parent).toBe(v.children);
+			if (item._name)
+				expect(v[item._name]).toBe(item.value);
+		});
+
+		expect(v.two).toBe(two);
+		expect(v.two.$parent).toBe(v);
+		expect(v.children.items.length).toBe(2);
+		expect(v.two()).toBe("two");
+
+		var v2 = v.copy();
+
+		expect(v2).not.toBe(v);
+		expect(v2.children.items.length).toBe(v.children.items.length);
+		expect(v2.two).toBeDefined();
+		expect(v2.two.__id).toBe("view");
+		expect(v2.two).not.toBe(two);
+		console.dir(v2);
+		expect(v2.two.children.items[0].value).toBe("two");
+
+		v2.children.each(function(child, name, index){
+			console.dir(child);
+
+			// anonymous views won't have a parent
+			if (child.$parent)
+				expect(child.$parent).toBe(v2);
+		});
+
+		v2.children.eachItem(function(item, index){
+			expect(item.$parent).toBe(v2.children);
+			if (item._name)
+				expect(v2[item._name]).toBe(item.value);
+		});
+	});
+
+	xit("can be rendered in several different ways", function(){
+		// var v = view(view("one"), view("two"), view("three"));
+		var v = view({
+			addClass: "x y z",
+			one: view("one", { addClass: "one" }),
+			two: view("two"),
+			three: view("three"),
+			init: function(){
+				this.children(this.one, this.two, this.three);
+			}
+		});
+
+		v.render().appendTo('body');
+	});
+
+	xit("can be copied", function(){
+		var v = view({
+
+		});
 	});
 
 	xit("should allow nesting", function(){
@@ -211,7 +293,7 @@ describe("view", function(){
 		title("My Title").classes("add").classes.remove("one")
 	});
 
-	it("should allow override of .set to use .reset", function(){
+	xit("should allow override of .set to use .reset", function(){
 		var v = view({
 			set: function(){
 				return this.reset.apply(this, arguments);

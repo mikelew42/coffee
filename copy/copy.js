@@ -28,9 +28,9 @@ var copy = function(value, base, skip){
 		
 		/* Note, this only works for modules, that have a .set method */
 		if (value[i] && 
-			value[i].$parent &&
-			value[i].$parent === value){
+			value[i].$parent){
 
+			if (value[i].$parent === value){
 				if (value[i].copy){
 					base[i] = value[i].copy({
 						$parent: base
@@ -40,6 +40,20 @@ var copy = function(value, base, skip){
 						$parent: base
 					})
 				}
+
+			// this is largely for coll+item implementation, so 
+			// that coll.items array copies the item objects, even
+			// though they're parented to the coll
+			} else if (is.arr(value)) {
+				base[i] = copy(value[i], null);
+				continue;
+
+			// this is important - many situations rely on 
+			// the $parent !== its container obj/mod, to skip it
+			} else {
+				continue;
+			}
+
 
 		} else {
 			base[i] = copy(value[i], null);

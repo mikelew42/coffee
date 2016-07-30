@@ -28,6 +28,12 @@ var mod = module.exports = {
 	assign: function(obj){
 		return Object.assign(this, obj);
 	},
+	getSet: function(){
+		if (arguments.length)
+			return this.set.apply(this, arguments);
+		else
+			return this.value;
+	}
 	// install: function(m){
 	// 	m.copyTo(this);
 	// 	return this;

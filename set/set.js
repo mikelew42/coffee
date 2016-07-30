@@ -32,6 +32,7 @@ var set = sfn(function(mod){
 	}
 	return mod;
 }, {
+	__id: "standalone set",
 	arg: function(mod, arg){
 		// type switch
 		if (is.obj(arg)){
@@ -44,6 +45,13 @@ var set = sfn(function(mod){
 				return mod.set.fn(arg);
 			else
 				return this.fn(mod, arg);
+		} else if (is.val(arg)){
+			if (mod.set && mod.set.val)
+				return mod.set.val(arg);
+		}
+
+		if (mod.set && mod.set.other){
+			return mod.set.other(arg);
 		}
 		
 		console.warn(mod, "not sure how to set:", arg);
@@ -53,9 +61,11 @@ var set = sfn(function(mod){
 	},
 	obj: function(mod, obj){
 		for (var i in obj){
-			if (is.undef(mod[i]))
+			if (is.undef(mod[i])){
 				mod[i] = obj[i]; // should we copy instead of assign obj literals?, or make references explicitly "refs"
-			else if (mod[i].set) // dependent on is.def(mod[i])
+				if (i[0] !== "$" && mod[i] && mod[i].adopt)
+					mod[i].$parent = mod;
+			} else if (mod[i].set) // dependent on is.def(mod[i])
 				mod[i].set.call(mod[i], obj[i]);
 			else if (is.fn(mod[i]))
 				if (mod.set && mod.set.fnProp)
@@ -85,6 +95,7 @@ set.$oo = sfn(function(){
 	}
 	return this.$parent;
 }, {
+	__id: "oo set",
 	arg: function(arg){
 		this._set.arg(this.$parent, arg);
 	},

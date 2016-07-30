@@ -24,19 +24,17 @@ var source_map_consumer = require("source-map/lib/source-map-consumer");
  *                          (an Array of Strings) passed as the first
  *                          argument
  */
-var _mapForUri = {};
-var _smc = {};
 var mapStackTrace = function(stack, done) {
   var lines;
+  var mapForUri = {};
   var rows = {};
   var fields;
   var uri;
   var expected_fields;
   var regex;
-  var skip_lines;
 
   var fetcher = new Fetcher(function() {
-    var result = processSourceMaps(lines, rows, _mapForUri);
+    var result = processSourceMaps(lines, rows, fetcher.mapForUri);
     done(result);
   });
 
@@ -65,8 +63,6 @@ var mapStackTrace = function(stack, done) {
       }
     }
   }
-
-  fetcher.done(_mapForUri);
 };
 
 var isChrome = function() {
@@ -78,31 +74,25 @@ var isFirefox = function() {
 };
 var Fetcher = function(done) {
   this.sem = 0;
+  this.mapForUri = {};
   this.done = done;
 };
 
 Fetcher.prototype.fetchScript = function(uri) {
-  if (!(uri in _mapForUri)) {
+  if (!(uri in this.mapForUri)) {
     this.sem++;
-    _mapForUri[uri] = null;
+    this.mapForUri[uri] = null;
   } else {
     return;
   }
 
   var xhr = createXMLHTTPObject();
-  // var that = this;
-  // xhr.onreadystatechange = function(e) {
-  //   that.onScriptLoad.call(that, e, uri);
-  // };
-  xhr.open("GET", uri, false);
-  // console.log('sending request for ', uri);
+  var that = this;
+  xhr.onreadystatechange = function(e) {
+    that.onScriptLoad.call(that, e, uri);
+  };
+  xhr.open("GET", uri, true);
   xhr.send();
-
-
-  // console.log('xhr.status', xhr.status);
-  if(xhr.status === 200){
-    this.onScriptLoad({ target: xhr }, uri);
-  }
 };
 
 var absUrlRegex = new RegExp('^(?:[a-z]+:)?//', 'i');
@@ -124,14 +114,12 @@ Fetcher.prototype.onScriptLoad = function(e, uri) {
       // get the map
       var mapUri = match[1];
 
-      var embeddedSourceMap = mapUri.match("data:application/json;charset=utf-8;base64,(.*)");
+      var embeddedSourceMap = mapUri.match("data:application/json;base64,(.*)");
 
       if (embeddedSourceMap && embeddedSourceMap[1]) {
-        _mapForUri[uri] = atob(embeddedSourceMap[1]);
-        return;
+        this.mapForUri[uri] = atob(embeddedSourceMap[1]);
+        this.done(this.mapForUri);
       } else {
-        console.warn("no embeddedSourceMap");
-        return;
         if (!absUrlRegex.test(mapUri)) {
           // relative url; according to sourcemaps spec is 'source origin'
           var origin;
@@ -180,46 +168,27 @@ Fetcher.prototype.onScriptLoad = function(e, uri) {
 var processSourceMaps = function(lines, rows, mapForUri) {
   var result = [];
   var map;
-  var row;
-  var smc;
-  var _file, _line, _column, _name;
   for (var i=0; i < lines.length; i++) {
-    smc = undefined;
-    row = rows[i];
+    var row = rows[i];
     if (row) {
       var uri = row[1];
       var line = parseInt(row[2], 10);
       var column = parseInt(row[3], 10);
+      map = mapForUri[uri];
 
-      if (_smc[uri]){
-        smc = _smc[uri];
+      if (map) {
+        // we think we have a map for that uri. call source-map library
+        var smc = new source_map_consumer.SourceMapConsumer(map);
+        var origPos = smc.originalPositionFor(
+          { line: line, column: column });
+        result.push(formatOriginalPosition(origPos.source,
+          origPos.line, origPos.column, origPos.name || origName(lines[i])));
       } else {
-        map = mapForUri[uri];
-        if (map){
-          smc = _smc[uri] = new source_map_consumer.SourceMapConsumer(map);
-        }
+        // we can't find a map for that url, but we parsed the row.
+        // reformat unchanged line for consistency with the sourcemapped
+        // lines.
+        result.push(formatOriginalPosition(uri, line, column, origName(lines[i])));
       }
-
-      if (smc){
-        var origPos = smc.originalPositionFor({
-          line: line,
-          column: column
-        });
-        _file = origPos.source;
-        _line = origPos.line;
-        _column = origPos.column;
-        _name = origPos.name || origName(lines[i]);
-      } else {
-        _file = uri;
-        _line = line;
-        _column = column;
-        _name = origName(lines[i]);
-      }
-
-
-      var fOP = formatOriginalPosition(_file, _line, _column, _name);
-      result.push(fOP);
-
     } else {
       // we weren't able to parse the row, push back what we were given
       result.push(lines[i]);

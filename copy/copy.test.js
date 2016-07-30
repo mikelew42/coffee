@@ -34,6 +34,30 @@ describe("copy", function(){
 		expect(objCopy).toEqual({ copyMe: 1 });
 	});
 
+	it("should reassign $parent refs", function(){
+		var obj = {
+			sub: {}
+		};
+
+		obj.sub.$parent = obj;
+
+		var objCopy = copy(obj);
+
+		expect(objCopy.sub.$parent).toBe(objCopy);
+	});
+
+	it("should not copy if $parent !== parent", function(){
+		var obj = {
+			sub: {
+				$parent: true
+			}
+		};
+
+		var objCopy = copy(obj);
+
+		expect(objCopy.sub).not.toBeDefined();
+	});
+
 	it("should defer to the object-oriented obj.copy, if available", function(){
 		var obj = {
 				copy: function(){

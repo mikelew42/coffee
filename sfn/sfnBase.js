@@ -8,8 +8,8 @@ var sfnBase = function(){
 			return sfn[sfn.invoke].apply(sfn, arguments);
 		else if (is.fn(sfn.invoke))
 			return sfn.invoke.apply(sfn, arguments);
-		else if (sfn.set)
-			return sfn.set.apply(sfn, arguments);
+		else if (sfn.getSet)
+			return sfn.getSet.apply(sfn, arguments);
 		else if (sfn.assign)
 			return sfn.assign.apply(sfn, arguments);
 	};
