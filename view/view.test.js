@@ -65,9 +65,12 @@ describe("view", function(){
 		var two = view('two', { type: "two" });
 		var v = view(one, two);
 
+		console.log('v');
+		console.dir(v);
+		console.log(v.render().html());
 		expect(v.children.$parent).toBe(v);
-		// console.dir(v);
 		expect(v.children.items[0].$parent).toBe(v.children);
+		expect(v.children.items[1].$parent).toBe(v.children);
 
 		v.children.each(function(child, name, index){
 			log.group('v.children.items.item');
@@ -93,6 +96,9 @@ describe("view", function(){
 
 		var v2 = v.copy();
 
+		console.log('v2');
+		console.dir(v2);
+		console.log(v2.render()[0].outerHTML);
 		expect(v2).not.toBe(v);
 		expect(v2.children.items.length).toBe(v.children.items.length);
 		expect(v2.two).toBeDefined();
