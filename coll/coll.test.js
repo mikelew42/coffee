@@ -13,7 +13,13 @@ describe("coll", function(){
 
 		c.append('a');
 		c.append(2);
-		c.append('three', 3);
+		// c.append('three', 3);
+
+		// for now, use { three: 3 } over "three", 3, to be more compatible
+		// when trying to use coll.set() --> append()
+				// i don't know how i would intercept the coll.set("three", 3) syntax
+				// by default, that would iterate over each arg, calling coll.set.arg("three")
+				// and then coll.set.arg(3)
 		expect(c.three()).toBe(3);
 
 		c.each(function(v, n, i){

@@ -4,7 +4,7 @@ var mod = require("../mod");
 var is = require("../is");
 var coll = require("../coll");
 var $ = require("jquery");
-require("logger/index.js");
+// require("logger/index.js");
 
 /*
 switch over children to use this coll
@@ -50,7 +50,7 @@ var children = coll({
 			this.$parent.append(val);
 		}
 	},
-	rendr: xlog.wrapc(function rendr(){
+	rendr: function rendr(){
 		this.each(function(child, name, index){
 		// 	console.dir(this);
 		// 	console.dir(this.$parent);
@@ -60,7 +60,7 @@ var children = coll({
 			if (child && child.render)
 				this.$parent.$el.append(child.render());
 		});
-	})
+	}
 });
 
 var view = sfn({

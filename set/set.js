@@ -37,21 +37,21 @@ var set = sfn(function(mod){
 		// type switch
 		if (is.obj(arg)){
 			if (mod.set && mod.set.obj)
-				return mod.set.obj(arg);
+				return mod.set.obj(mod, arg);
 			else
 				return this.obj(mod, arg);
 		} else if (is.fn(arg)){
 			if (mod.set && mod.set.fn)
-				return mod.set.fn(arg);
+				return mod.set.fn(mod, arg);
 			else
 				return this.fn(mod, arg);
 		} else if (is.val(arg)){
 			if (mod.set && mod.set.val)
-				return mod.set.val(arg);
+				return mod.set.val(mod, arg);
 		}
 
 		if (mod.set && mod.set.other){
-			return mod.set.other(arg);
+			return mod.set.other(mod, arg);
 		}
 		
 		console.warn(mod, "not sure how to set:", arg);
@@ -62,23 +62,33 @@ var set = sfn(function(mod){
 	obj: function(mod, obj){
 		for (var i in obj){
 			if (is.undef(mod[i])){
-				mod[i] = obj[i]; // should we copy instead of assign obj literals?, or make references explicitly "refs"
-				if (i[0] !== "$" && mod[i] && mod[i].adopt)
-					mod[i].$parent = mod;
+				this.stdProp(mod, i, obj);
 			} else if (mod[i].set) // dependent on is.def(mod[i])
 				mod[i].set.call(mod[i], obj[i]);
 			else if (is.fn(mod[i]))
-				if (mod.set && mod.set.fnProp)
-					mod.set.fnProp.call(mod.set, i, obj);
-				else
-					this.fnProp(mod, i, obj);
+				this.fnProp(mod, i, obj);
 			else
-				mod[i] = obj[i]; // mod[i] is defined, override
+				this.stdProp(mod, i, obj);
 		}
 	},
+	stdProp: function(mod, i, obj){
+		if (mod.set && mod.set.stdProp && mod.set.stdProp !== this.stdProp)
+			return mod.set.stdProp(mod, i, obj);
+
+		mod[i] = obj[i];
+
+		this.adopt(mod, i);
+	},
+	adopt: function(mod, i){
+		if (i[0] !== "$" && mod[i] && mod[i].adopt && !mod[i].$parent)
+			mod[i].$parent = mod;
+	},
 	fnProp: function(mod, i, obj){
+		if (mod.set && mod.set.fnProp && mod.set.fnProp !== this.fnProp)
+			return mod.set.fnProp(mod, i, obj);
+
 		if (is.fn(obj[i])){
-			mod[i] = obj[i];
+			this.stdProp(mod, i, obj);
 		} else {
 			if (is.arr(obj[i])){
 				mod[i].apply(mod, obj[i]);
@@ -89,24 +99,77 @@ var set = sfn(function(mod){
 	}
 });
 
-set.$oo = sfn(function(){
+// this sfn is ssfn, and will not adopt!!!
+var setOO = sfn(function(){
 	for (var i = 0; i < arguments.length; i++){
 		this.arg(arguments[i]);
 	}
 	return this.$parent;
 }, {
-	__id: "oo set",
+	__id: "setOO",
+	init: function(){
+		if (this.$parent)
+			this.mod = this.$parent;
+	},
 	arg: function(arg){
-		this._set.arg(this.$parent, arg);
+		if (is.obj(arg))
+			this.obj(arg);
+		else if (is.fn(arg))
+			this.fn(arg);
+		else if (is.str(arg))
+			this.str(arg);
+		else
+			console.warn("not sure how to set:", arg);
 	},
-	obj: function(obj){
-		this._set.obj(this.$parent, obj);
+	obj: function(objArg){
+		for (var i in objArg){
+			this.prop(i, objArg);
+		}
 	},
-	fnProp: function(i, obj){
-		this._set.fnProp(this.$parent, i, obj);
-	},
-	_set: set
+	prop: sfn(function(propName, objArg){
+		var newValue = objArg[propName];
+		// if (is.undef(this.mod[propName]))
+	}, {
+		// adopt: true, // won't work on ssfn
+		init: function(){
+			if (this.$parent)
+				this.mod = this.$parent.mod;
+		},
+		und: sfn(function(propName, objArg){
+
+		})
+
+	})
 });
+
+setOO.prop.$parent = setOO;
+
+set.$oo = set.copy(function(){
+	for (var i = 0; i < arguments.length; i++){
+		this.arg(this.$parent, arguments[i]);
+	}
+	return this.$parent;
+});
+
+
+// set.$oo = sfn(function(){
+// 	for (var i = 0; i < arguments.length; i++){
+// 		this.arg(arguments[i]);
+// 	}
+// 	return this.$parent;
+// }, {
+// 	__id: "oo set",
+// 	arg: function(arg){
+// 		this._set.arg(this.$parent, arg);
+// 	},
+// 	obj: function(obj){
+// 		this._set.obj(this.$parent, obj);
+// 	},
+// 	fnProp: function(i, obj){
+// 		this._set.fnProp(this.$parent, i, obj);
+// 	},
+// 	_set: set
+// });
 
 /*
 A problem with this approach:

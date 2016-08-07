@@ -2,7 +2,7 @@ require("../jasmine");
 var is = require("../is");
 var view = require("./view");
 var $ = require("jquery");
-require("logger/index.js");
+// require("logger/index.js");
 
 describe("view", function(){
 	it("should create a sfn", function(){
@@ -73,9 +73,9 @@ describe("view", function(){
 		expect(v.children.items[1].$parent).toBe(v.children);
 
 		v.children.each(function(child, name, index){
-			log.group('v.children.items.item');
+			// log.group('v.children.items.item');
 			console.dir(child);
-			log.end();
+			// log.end();
 
 
 			// anonymous views won't have a parent

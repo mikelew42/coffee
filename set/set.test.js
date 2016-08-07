@@ -35,14 +35,14 @@ describe("set", function(){
 			method: function(){
 				testMethod = arguments;
 			}
-		}, testInvoke, testArg, testObj, testFnProp;
+		}, testInvoke, testArg, testObj, testFnProp, testStdProp;
 
 		mod.set = set.$oo.copy(function(){
 			testInvoke = true;
 			set.$oo.invoke.apply(this, arguments);
 		}, {
 			$parent: mod,
-			arg: function(arg){
+			arg: function(mod, arg){
 				testArg = true;
 				set.$oo.arg.apply(this, arguments);
 			},
@@ -53,6 +53,10 @@ describe("set", function(){
 			fnProp: function(){
 				testFnProp = true;
 				set.$oo.fnProp.apply(this, arguments);	
+			},
+			stdProp: function(){
+				testStdProp = true;
+				set.$oo.stdProp.apply(this, arguments);
 			}
 		});
 
@@ -62,12 +66,12 @@ describe("set", function(){
 			sub: { adopt: true }
 		});
 
-		expect(testMethod[0]).toBe(4);
-		expect(testMethod[1]).toBe(5);
 		expect(testInvoke).toBe(true);
 		expect(testArg).toBe(true);
 		expect(testObj).toBe(true);
 		expect(testFnProp).toBe(true);
+		expect(testMethod[0]).toBe(4);
+		expect(testMethod[1]).toBe(5);
 		expect(mod.test).toBe(1);
 		expect(mod.sub.$parent).toBe(mod);
 	});
