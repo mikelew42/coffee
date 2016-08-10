@@ -6,9 +6,10 @@ var coll = require("../coll").copy();
 
 var q = coll({
 	factory: true,
-	invoke: function(){
-		this.append.apply(this, arguments);
-		return this.$parent || this;
+	set: {
+		obj: function(obj){
+			for (var i in )
+		}
 	},
 	exec: function(){
 		var args = arguments;

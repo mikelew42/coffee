@@ -3,6 +3,6 @@ var q = require("./q").copy();
 
 describe("q", function(){
 	it("auto q values", function(){
-		expect(true).toBe(true);
+		var q1 = q({})
 	});
 });
