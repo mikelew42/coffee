@@ -101,6 +101,12 @@ describe("sfn", function(){
 		expect(s5.newNewProp).toBe(13);
 	});
 
+	xit("should allow factory and invoke str", function(){
+		// if factory: true, and invoke: fn || "str", then the sfn
+		// should use copy on the first run, and then use the invoke
+		// fn afterwards.
+	});
+
 	it("should allow $parent refs", function(){
 		var s = sfn();
 		s({
