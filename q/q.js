@@ -8,7 +8,7 @@ var q = coll({
 	factory: true,
 	set: {
 		obj: function(obj){
-			for (var i in )
+			// for (var i in )
 		}
 	},
 	exec: function(){

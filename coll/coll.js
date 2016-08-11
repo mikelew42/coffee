@@ -17,19 +17,6 @@ var coll = sfn({
 	__id: "coll",
 	factory: true,
 	items: [],
-
-	// set.obj will iterate over props, and use coll[prop].set 
-	// if present (which it will be, since its an item sfn)
-	// 
-	set: {
-		other: function(coll, value){
-			coll.append(value);
-		},
-		stdProp: function(coll, i, obj){
-			coll.append(i, obj[i]);
-			// does adopt apply here?
-		}
-	},
 	append: function(name, value){
 		// TODO: move as much of this logic as possible to the item
 		if (is.undef(value)){
