@@ -20,8 +20,8 @@ var sfn = function(){
 	fn.copy = sfnCopy;
 
 	// when present, set.fn will be called when we pass a fn to the sfn.set
-	fn.set.fn = function(newInvokeFn){
-		this.$parent.invoke = newInvokeFn;
+	fn.set.fn = function(thisSfn, newInvokeFn){
+		thisSfn.invoke = newInvokeFn;
 	};
 
 	fn.set.apply(fn, arguments);

@@ -12,7 +12,7 @@ describe("coll", function(){
 		var c = coll();
 
 		c.append('a');
-		// c.append(2);
+		c.append(2);
 		c(2);
 		// c.append('three', 3);
 
@@ -24,13 +24,23 @@ describe("coll", function(){
 
 		c({ three: 3 })
 
-		expect(c.three()).toBe(3);
+		// expect(c.three()).toBe(3);
 
-		c.each(function(v, n, i){
-			console.log(i, n, v);
-		});
-		c.eachItem(function(v, i){
-			console.log(v.i, i);
-		});
+		// c.each(function(v, n, i){
+		// 	console.log(i, n, v);
+		// });
+		// c.eachItem(function(v, i){
+		// 	console.log(v.i, i, v.value, v._name);
+		// });
+
+		c.log();
+
+		c({
+			four: 4,
+			five: [1, 2, 3],
+			six: { seven: 7, eight: function(){} }
+		})
+
+		c.log();
 	});
 });

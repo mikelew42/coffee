@@ -10,44 +10,52 @@ var is = require("../is");
 var item = sfn({
 	__id: "coll item",
 	factory: true,
-	value: undefined
+	value: undefined,
+	init: function(){
+		if (!this.$parent)
+			return;
+
+		this.alias();
+
+		this.i = this.$parent.items.push(this) - 1;
+	},
+	alias: function(){
+		if (this._name){
+			this.$parent[this._name] = this;
+		}
+	}
 });
 
 var coll = sfn({
 	__id: "coll",
 	factory: true,
+	invoke: "append",
 	items: [],
-
-	// set.obj will iterate over props, and use coll[prop].set 
-	// if present (which it will be, since its an item sfn)
-	// 
-	set: {
-		other: function(coll, value){
-			coll.append(value);
-		},
-		stdProp: function(coll, i, obj){
-			coll.append(i, obj[i]);
-			// does adopt apply here?
+	item: item,
+	appendDictionary: function(dict){
+		for (var i in dict){
+			this.appendNamed(i, dict[i]);
 		}
 	},
-	append: function(name, value){
-		// TODO: move as much of this logic as possible to the item
-		if (is.undef(value)){
-			value = name;
-			name = false;
-		}
-
-		value = item({
+	appendNamed: function(name, value){
+		this.item.copy({
+			value: value,
+			$parent: this,
+			_name: name
+		});
+	},
+	appendAnonymous: function(value){
+		this.item.copy({
 			value: value,
 			$parent: this
-		});
-
-		if (name){
-			value._name = name;
-			this[name] = value;
+		})
+	},
+	append: function(value){
+		if (is.obj(value)){
+			return this.appendDictionary(value);
+		} else {
+			return this.appendAnonymous(value);
 		}
-
-		value.i = this.items.push(value) - 1;
 	},
 	each: function(iterator){
 		for (var i = 0; i < this.items.length; i++){
@@ -60,6 +68,17 @@ var coll = sfn({
 			iterator.call(this, this.items[i], i);
 		}
 		return this;
+	},
+	log: function(){
+		var items = [];
+		this.eachItem(function(item, i){
+			items.push({
+				i: item.i,
+				_name: item._name,
+				value: item.value
+			});
+		})
+		console.table(items);
 	}
 });
 
