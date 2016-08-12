@@ -104,7 +104,7 @@ var setOO = sfn(function(){
 	for (var i = 0; i < arguments.length; i++){
 		this.arg(arguments[i]);
 	}
-	return this.$parent;
+	return this.$parent || this;
 }, {
 	__id: "setOO",
 	init: function(){

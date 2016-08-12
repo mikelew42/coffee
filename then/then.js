@@ -8,6 +8,7 @@ var q = require("../q");
 var cb = coll.item.copy({
 	__id: "then.item/cb",
 	alias: function(){
+		// this.$parent is "then", this.$parent.$parent would be the module that then is attached to
 		if (this._name){
 			this.$parent[this._name] = this;
 			if (this.$parent.$parent){
