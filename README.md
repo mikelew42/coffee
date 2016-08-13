@@ -1,4 +1,4 @@
-The name was inspired by my beverage when I was making this.  The last version was PBR.
+The name was inspired by my beverage when I was making this.  The last version was PBR.  This is just a temporary name...
 
 The best way to make sense of this is to check the tests, although they're probably a little confusing.
 
