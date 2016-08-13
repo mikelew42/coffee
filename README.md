@@ -103,4 +103,8 @@ We can now **add new functions without overriding anything**, but we can still o
 
 Above, init is a super function.  It allows sub functions.  It gets a little tricky, and isn't fully working right now, so I'll stop here.  It gets **really** confusing because you have to worry about function context.  If you look at the super function code, you'll see how crazy it gets.
 
+Also, it's worth noting that the init superfunction uses a q (the `q` module) for its event-like behavior.  The q is named `then`, and lives at init.then.  It's kind of like the Promise API (`myPromise.then(cb)`).  So, when you pass a function to init (there are several ways to do this, but most end up using `mod.set({ init: function(){} }`), it gets added to `mod.init.then`.
+
+The `q` and `then` modules are based on the `coll`.  The `coll` is like an Underscore.js/lodash collection - combining the benefits of named items and ordered items (JS objects are named, but not ordered, and JS arrays are ordered, but not named).
+
 I'm in a constant battle to create the right API (syntax), keeping it simple, yet also accomplishing what I feel is necessary.
