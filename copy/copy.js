@@ -51,7 +51,9 @@ var copy = function(value, base, skip){
 			// this is important - many situations rely on 
 			// the $parent !== its container obj/mod, to skip it
 			} else {
-				continue;
+				// maybe we reassign the reference?
+				base[i] = value[i];
+				// continue;
 			}
 
 

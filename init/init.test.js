@@ -1,11 +1,12 @@
 require("../jasmine");
 var init = require("./init");
+var sfn = require("../sfn");
 
 describe("init", function(){
 	it("should work as a standalone module", function(){
 		var testSub1 = false,
 			testAnon = false,
-			i1 = 
+			i1 = init();
 
 		i1({
 			sub1: function(){
@@ -34,8 +35,17 @@ describe("init", function(){
 	});
 
 	it("should work as a sub module", function(){
-		// var obj = {
-		// 	init: init()
-		// };
+		var mod = sfn({
+			init: init()
+		});
+
+		expect(mod.init.$parent).toBe(mod);
+
+		mod.init(function(){
+			console.log('yo');
+		});
+
+		var mod2 = mod.copy();
+		
 	});
 });

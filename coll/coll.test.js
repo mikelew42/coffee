@@ -42,5 +42,13 @@ describe("coll", function(){
 		})
 
 		c.log();
+
+		var c2 = c.copy();
+
+		console.log('c2');
+		c2.log();
+
+		console.log('c');
+		c.log();
 	});
 });

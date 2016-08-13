@@ -1,6 +1,3 @@
-var sfn = require("../sfn");
-var copy = require("../copy");
-var mod = require("../mod");
 var is = require("../is");
 var coll = require("../coll");
 var q = require("../q");
@@ -10,9 +7,9 @@ var cb = coll.item.copy({
 	alias: function(){
 		// this.$parent is "then", this.$parent.$parent would be the module that then is attached to
 		if (this._name){
-			this.$parent[this._name] = this;
-			if (this.$parent.$parent){
-				this.$parent.$parent[this._name] = this;
+			this.$coll[this._name] = this;
+			if (this.$coll.$parent){
+				this.$coll.$parent[this._name] = this;
 			}
 		}
 	}

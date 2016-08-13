@@ -1,6 +1,3 @@
-var sfn = require("../sfn");
-var copy = require("../copy");
-var mod = require("../mod");
 var is = require("../is");
 var coll = require("../coll");
 

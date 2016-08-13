@@ -4,6 +4,7 @@ var sfn = require("../sfn");
 var init = sfn({
 	factory: true,
 	then: then(),
+	adopt: true,
 	invoke: function(){
 		if (!arguments.length){
 			this.then.exec();

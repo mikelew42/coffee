@@ -46,7 +46,7 @@ describe("copy", function(){
 		expect(objCopy.sub.$parent).toBe(objCopy);
 	});
 
-	it("should not copy if $parent !== parent", function(){
+	it("should reassign if $parent !== this", function(){
 		var obj = {
 			sub: {
 				$parent: true
@@ -55,7 +55,7 @@ describe("copy", function(){
 
 		var objCopy = copy(obj);
 
-		expect(objCopy.sub).not.toBeDefined();
+		expect(objCopy.sub).toBe(obj.sub);
 	});
 
 	it("should defer to the object-oriented obj.copy, if available", function(){
