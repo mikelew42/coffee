@@ -4,6 +4,8 @@ The best way to make sense of this is to check the tests, although they're proba
 
 Please excuse the crude nature of this repo, I've been hesitant to publish it, and all of this documentation stuff is new to me.  **Today, August 13th, is my birthday.  If you want to do me a favor, try to install this and let me know how it goes!**  This is a 3 year work in progress, and today is the first day I've tried to get feedback on it.  I realize it has a long way to go...
 
+I'm in a rush to publish this, and haven't cleaned up a few odds and ends.  The `public` directory, and `Base` directory, for example, should just be deleted...
+
 ### Installation
 
 ```
