@@ -147,7 +147,3 @@ Also, it's worth noting that the init superfunction uses a q (the `q` module) fo
 The `q` and `then` modules are based on the `coll`.  The `coll` is like an Underscore.js/lodash collection - combining the benefits of named items and ordered items (JS objects are named, but not ordered, and JS arrays are ordered, but not named).
 
 I'm in a constant battle to create the right API (syntax), keeping it simple, yet also accomplishing what I feel is necessary.
-
-
-
-** It's my birthday today, and have to go hangout with the wife and kid.  If you've made it this far, and actually read this, leave me a comment in the issue tracker - that would be awesome **.
