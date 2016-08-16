@@ -9,11 +9,9 @@ npm run server
 
 Then go to `http://localhost:8080/` and you should see a directory.  You can choose `all` to run all tests, or click into a folder to run the tests for that module.
 
->Please use the GitHub Issues tab for anything you want!! Ask me questions, give comments/critique.  This has been a work in progress for several years, and I'm just now trying to get this in a presentable form.  Help/feedback is duly appreciated!
-
 ### Overview
 
-This repo consists of several very basic, core modules, that attempts to replace the traditional methods of creating JavaScript applications (such as prototypes, ES6 classes, or functional paradigms):
+This repo consists of several very basic modules that attempt to replace the traditional methods of creating JavaScript applications (such as prototypes, ES6 classes, or functional paradigms):
 
 - `is` (a simple type checker)
 - `copy` (instead of using `extend` and `new`, just create something and copy it)
@@ -26,11 +24,21 @@ This repo consists of several very basic, core modules, that attempts to replace
 - `then` (an implementation of the q, so any module can do `mod.then(cb)`)
 - `init` (the long-awaited starting point for modules... this is complicated too)
 
-Some introduction...
+Traditionally, you might have
 
-### Just copy it
+```
+MyConstructor.prototype.prop = ...
+```
 
-Instead of using constructors with prototypes, and creating instances with `new`, we take a simpler approach:  just copy everything.  Create a module (think: plain old javascript object, even though it has a few base methods), and add properties:
+and
+
+```
+var myInstance = new MyConstructor();
+```
+
+Instead of having separate instance, constructor, and prototype, let's combine them into a single object (let's call it a module).
+
+Instead of using `new Constructor()` and `Constructor.prototype = ...`, just create an object, and copy it.  When you need to "extend the class", just copy the object.  All objects are prototypes, and can be copied to crete a new class, or a new instance (there's little difference).
 
 ```javascript
 myMod = mod.copy({
