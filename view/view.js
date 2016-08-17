@@ -1,4 +1,5 @@
 var sfn = require("../sfn");
+var set = require("../set");
 var copy = require("../Copy");
 var mod = require("../mod");
 var is = require("../is");
@@ -33,21 +34,21 @@ var children = coll({
 		});
 	},
 	set: {
-		fn: function(fn){
+		fn: function(children, fn){
 			if (fn.tag){
 				if (fn.type){
-					this.$parent.append(fn.type, fn);
-					this.$parent.$parent[fn.type] = fn;
-					fn.$parent = this.$parent.$parent;
+					children.append(fn.type, fn);
+					children.$parent[fn.type] = fn;
+					fn.$parent = children.$parent;
 				} else {
-					this.$parent.append(fn);
+					children.append(fn);
 				}
 			}
 		},
-		val: function(val){
-			if (is.undef(this.$parent.$parent.value))
-				this.$parent.$parent.value = val;
-			this.$parent.append(val);
+		val: function(children, val){
+			if (is.undef(children.$parent.value))
+				children.$parent.value = val;
+			children.append(val);
 		}
 	},
 	rendr: function rendr(){
@@ -71,11 +72,11 @@ var view = sfn({
 	children: children(),
 	attr: [],
 	set: {
-		arg: function(arg){
+		arg: function(view, arg){
 			if (arg && (is.val(arg) || arg.render))
-				return this.$parent.children(arg);
+				return view.children(arg);
 			else 
-				return this._set.arg(this.$parent, arg);
+				return set.$oo.arg(view, arg);
 		}
 	},
 	init: function(){
