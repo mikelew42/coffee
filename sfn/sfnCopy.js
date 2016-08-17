@@ -1,4 +1,4 @@
-var copy = require("../copy");
+var copy = require("../Copy");
 var sfnBase = require("./sfnBase");
 
 var sfnCopy = function(o){

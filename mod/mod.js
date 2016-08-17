@@ -1,5 +1,5 @@
 var is = require("../is");
-var copy = require("../copy");
+var copy = require("../Copy");
 var set = require("../set");
 // require set below
 var copy2 = copy.copy2;

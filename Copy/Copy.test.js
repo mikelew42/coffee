@@ -1,6 +1,6 @@
 require("../jasmine");
 var is = require("../is");
-var copy = require("./copy");
+var copy = require("./Copy");
 
 describe("copy", function(){
 	it("should return simple values", function(){

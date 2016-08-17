@@ -1,5 +1,5 @@
 require("../is/is.test")
-require("../copy/copy.test")
+require("../Copy/Copy.test")
 require("../mod/mod.test")
 require("../sfn/sfn.test")
 // require("../view/view.test")

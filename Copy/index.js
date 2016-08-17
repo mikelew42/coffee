@@ -1,1 +1,1 @@
-module.exports = require("./copy");
+module.exports = require("./Copy");

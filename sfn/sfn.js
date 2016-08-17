@@ -1,5 +1,5 @@
 var mod = require("../mod");
-var copy = require("../copy");
+var copy = require("../Copy");
 var is = require("../is");
 var sfnBase = require("./sfnBase");
 var sfnCopy = require("./sfnCopy");
