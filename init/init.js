@@ -5,7 +5,7 @@ var init = sfn({
 	factory: true,
 	then: then(),
 	adopt: true,
-	invoke: function(){
+	main: function(){
 		if (!arguments.length){
 			this.then.exec();
 		} else {

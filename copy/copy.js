@@ -61,14 +61,6 @@ var copy = function(value, base, skip){
 			base[i] = copy(value[i], null);
 		}
 
-
-		/* a problem here, is that if the value[i] has .copy, then
-		it will get called.  the base[i] new copy will also be initialized
-		before this gets applied:
-		*/
-
-		// if (value[i] && value[i].$parent && value[i].$parent === value)
-		// 	base[i].$parent = base;
 	}
 
 	return base;

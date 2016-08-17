@@ -1,5 +1,4 @@
 var is = require("../is");
-var copy = require("../copy");
 var sfnBase = require("./sfnBase");
 var sfnCopy = require("./sfnCopy");
 
@@ -20,7 +19,7 @@ var ssfn = function(){
 				if (typeof arg === "object")
 					this.assign(arg);
 				else if (typeof arg === "function")
-					this.invoke = arg;
+					this.main = arg;
 			}
 		}
 	};

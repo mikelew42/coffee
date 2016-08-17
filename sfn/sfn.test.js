@@ -55,7 +55,7 @@ describe("sfn", function(){
 		expect(s5.two).toBe("two");
 		expect(s5.three).toBe(true);
 
-		s5.invoke = "copy";
+		s5.main = "copy";
 
 		var s6 = s5();
 		

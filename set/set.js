@@ -36,14 +36,14 @@ var set = sfn(function(mod){
 	arg: function(mod, arg){
 		// type switch
 		if (is.obj(arg)){
-			if (mod.set && mod.set.obj)
-				return mod.set.obj(mod, arg);
-			else
+			// if (mod.set && mod.set.obj)
+			// 	return mod.set.obj(mod, arg);
+			// else
 				return this.obj(mod, arg);
 		} else if (is.fn(arg)){
-			if (mod.set && mod.set.fn)
-				return mod.set.fn(mod, arg);
-			else
+			// if (mod.set && mod.set.fn)
+			// 	return mod.set.fn(mod, arg);
+			// else
 				return this.fn(mod, arg);
 		} else if (is.val(arg)){
 			if (mod.set && mod.set.val)
@@ -72,6 +72,7 @@ var set = sfn(function(mod){
 		}
 	},
 	stdProp: function(mod, i, obj){
+		// is this even tested?  I think mod.set should be "this", so this will always be false
 		if (mod.set && mod.set.stdProp && mod.set.stdProp !== this.stdProp)
 			return mod.set.stdProp(mod, i, obj);
 

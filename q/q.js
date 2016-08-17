@@ -3,7 +3,7 @@ var coll = require("../coll");
 
 var q = coll({
 	factory: true,
-	invoke: "append",
+	main: "append",
 	exec: function(){
 		var args = arguments;
 		this.eachItem(function(cbItem){

@@ -35,11 +35,11 @@ describe("set", function(){
 			method: function(){
 				testMethod = arguments;
 			}
-		}, testInvoke, testArg, testObj, testFnProp, testStdProp;
+		}, testMain, testArg, testObj, testFnProp, testStdProp;
 
 		mod.set = set.$oo.copy(function(){
-			testInvoke = true;
-			set.$oo.invoke.apply(this, arguments);
+			testMain = true;
+			set.$oo.main.apply(this, arguments);
 		}, {
 			$parent: mod,
 			arg: function(mod, arg){
@@ -66,7 +66,7 @@ describe("set", function(){
 			sub: { adopt: true }
 		});
 
-		expect(testInvoke).toBe(true);
+		expect(testMain).toBe(true);
 		expect(testArg).toBe(true);
 		expect(testObj).toBe(true);
 		expect(testFnProp).toBe(true);

@@ -29,7 +29,7 @@ var item = sfn({
 var coll = sfn({
 	__id: "coll",
 	factory: true,
-	invoke: "append",
+	main: "append",
 	items: [],
 	item: item,
 	appendDictionary: function(dict){
