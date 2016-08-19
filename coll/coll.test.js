@@ -1,14 +1,83 @@
 require("../jasmine");
 var coll = require("./coll");
 
-describe("item", function(){
-	it("should not copy value, if it has a $parent", function(){
-		
-	});
-});
-
 describe("coll", function(){
 	it("should append values", function(){
+		var c = coll(), test = [];
+
+		c.append('a');
+		c.append('b');
+
+		c.each(function(v, n, i){
+			// console.log(v, n, i);
+			test.push(v);
+		});
+
+		expect(test).toEqual(['a', 'b']);
+	});
+
+	it("should append named values", function(){
+		var c = coll(), test = [];
+
+		c.append({
+			a: "a"
+		});
+
+		c.append({
+			b: "b"
+		});
+
+		c.each(function(v, n, i){
+			test.push({
+				value: v,
+				name: n,
+				index: i
+			});
+		});
+
+		expect(test).toEqual([
+			{
+				value: "a",
+				name: "a",
+				index: 0
+			},
+			{
+				value: "b",
+				name: "b",
+				index: 1
+			}
+		]);
+	});
+
+	it("should by copyable", function(){
+		var c = coll();
+
+		c.append('one', 'two', 3);
+
+		var c2 = c.copy();
+
+		// c2.log();
+
+		var c3 = coll();
+
+		c3.append({
+			one: 1
+		}, {
+			two: "two"
+		});
+
+		// c3.log();
+		expect(c3.one.value).toBe(1);
+		expect(c3.one.$parent).toBe(c3.items);
+
+		var c4 = c3.copy();
+		expect(c4.one.value).toBe(1);
+		expect(c4.one.$parent).toBe(c4.items);
+
+		// c4.log();
+	});
+
+	xit("should append values", function(){
 		var c = coll();
 
 		c.append('a');
@@ -33,7 +102,7 @@ describe("coll", function(){
 		// 	console.log(v.i, i, v.value, v._name);
 		// });
 
-		c.log();
+		// c.log();
 
 		c({
 			four: 4,
@@ -41,14 +110,14 @@ describe("coll", function(){
 			six: { seven: 7, eight: function(){} }
 		})
 
-		c.log();
+		// c.log();
 
 		var c2 = c.copy();
 
 		console.log('c2');
-		c2.log();
+		// c2.log();
 
 		console.log('c');
-		c.log();
+		// c.log();
 	});
 });

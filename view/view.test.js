@@ -60,21 +60,32 @@ describe("view", function(){
 		v1.$el.remove();
 	});
 
-	it("should be copyable", function(){
+	it("should allow named children", function(){
 		var one = view("one");
-		var two = view('two', { type: "two" });
+		var two = view("two", { type: "two" });
 		var v = view(one, two);
 
-		console.log('v');
-		console.dir(v);
-		console.log(v.render().html());
+		expect(v.two).toBe(two);
+		expect(v.two.$parent).toBe(v);
 		expect(v.children.$parent).toBe(v);
-		expect(v.children.items[0].$parent).toBe(v.children);
-		expect(v.children.items[1].$parent).toBe(v.children);
+		expect(v.children.items[0].$parent).toBe(v.children.items);
+		expect(v.children.items[0].$coll).toBe(v.children);
+	});
+
+	it("should be copyable", function(){
+		var one = view("one", { __id: "one" });
+		var two = view('two', { type: "two", __id: "two" });
+		var v = view(one, two, { __id: "v" });
+
+		// console.log('v');
+		// console.dir(v);
+		// console.log(v.render()[0].outerHTML);
+		expect(v.children.$parent).toBe(v);
 
 		v.children.each(function(child, name, index){
 			// log.group('v.children.items.item');
-			console.dir(child);
+			// console.log(name);
+			// console.dir(child);
 			// log.end();
 
 
@@ -84,31 +95,45 @@ describe("view", function(){
 		});
 
 		v.children.eachItem(function(item, index){
-			expect(item.$parent).toBe(v.children);
+			expect(item.$parent).toBe(v.children.items);
+			expect(item.$coll).toBe(v.children);
 			if (item._name)
 				expect(v[item._name]).toBe(item.value);
 		});
 
 		expect(v.two).toBe(two);
 		expect(v.two.$parent).toBe(v);
+		expect(v.children.two.value).toBe(v.two);
+		expect(v.children.two.$parent).toBe(v.children.items);
 		expect(v.children.items.length).toBe(2);
 		expect(v.two()).toBe("two");
 
-		var v2 = v.copy();
+		var v2 = v.copy({ __id: "v2" });
 
-		console.log('v2');
-		console.dir(v2);
-		console.log(v2.render()[0].outerHTML);
+		expect(v2.__id).toBe("v2");
+		// // console.log('v2');
+		// console.dir(v2);
+		// console.log(v2.render()[0].outerHTML);
 		expect(v2).not.toBe(v);
+		expect(v2.children.$parent).toBe(v2);
+		expect(v2.children.items).not.toBe(v.children.items);
 		expect(v2.children.items.length).toBe(v.children.items.length);
-		expect(v2.two).toBeDefined();
-		expect(v2.two.__id).toBe("view");
-		expect(v2.two).not.toBe(two);
-		console.dir(v2);
+		expect(v2.two).not.toBe(v.two);
+		expect(v2.two.$parent).toBe(v2);
+		expect(v2.children).not.toBe(v.children);
+		// expect(v2.children.two.value).toBe(v2.two);
+		// // console.dir(v2);
 		expect(v2.two.children.items[0].value).toBe("two");
+		expect(v2.children.two).not.toBe(v.children.two);
+		expect(v2.children.two.$parent).toBe(v2.children.items);
+		expect(v2.children.two.value).toBe(v2.two);
 
 		v2.children.each(function(child, name, index){
-			console.dir(child);
+			// console.dir(child);
+			if(child.__id === "two"){
+				expect(child).toBe(v2.two);
+				expect(child).not.toBe(v.two);
+			}
 
 			// anonymous views won't have a parent
 			if (child.$parent)
@@ -116,7 +141,7 @@ describe("view", function(){
 		});
 
 		v2.children.eachItem(function(item, index){
-			expect(item.$parent).toBe(v2.children);
+			expect(item.$parent).toBe(v2.children.items);
 			if (item._name)
 				expect(v2[item._name]).toBe(item.value);
 		});

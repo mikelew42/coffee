@@ -4,27 +4,27 @@ var copy = require("../Copy");
 var mod = require("../mod");
 var is = require("../is");
 var coll = require("../coll");
+var init = require("../init");
 var $ = require("jquery");
-// require("logger/index.js");
 
-/*
-switch over children to use this coll
-children.items won't copy their value if it has another parent
-the children parent object has reference to the view, and in its init, can 
-loop through items, see if they have a handle, see if it lives on the view, and assign
-it to collItem.value.
+var childViewItem = coll.item.copy({
+	__id: "childViewItem"
+});
 
-The only way this fails is if the collItem's handle is incorrect, and/or the
-view's handle is incorrect, and/or the view's handle value is incorrect.
-*/
 var children = coll({
 	__id: "children coll",
 	factory: true,
 	adopt: true,
 	init: function(){
-		this.referenceChildren();
+		var self = this;
+		// console.log('view.children.init', this.$parent && this.$parent.__id);
+		this.$parent && this.$parent.init(function(){
+			// this.log();
+			self.reAlias();
+			self.initSubViews();
+		});
 	},
-	referenceChildren: function(){
+	initSubViews: function(){
 		if (!this.$parent)
 			return;
 
@@ -35,9 +35,12 @@ var children = coll({
 	},
 	set: {
 		fn: function(children, fn){
+			// console.log('children.set.fn', fn);
 			if (fn.tag){
+				// console.log('children.set.fn.tag', fn.tag);
 				if (fn.type){
-					children.append(fn.type, fn);
+					// console.log('appending view', fn.tag, fn.type);
+					children.appendNamed(fn.type, fn);
 					children.$parent[fn.type] = fn;
 					fn.$parent = children.$parent;
 				} else {
@@ -61,6 +64,15 @@ var children = coll({
 			if (child && child.render)
 				this.$parent.$el.append(child.render());
 		});
+	},
+	log: function(){
+		console.group("children [" + this.items.length + "]");
+			this.each(function(child, name, index){
+				console.group(index, name, child.value && child.value.__id);
+				child.log && child.log();
+				console.groupEnd();
+			});
+		console.groupEnd();
 	}
 });
 
@@ -71,21 +83,17 @@ var view = sfn({
 	classes: [],
 	children: children(),
 	attr: [],
+	init: init(),
 	set: {
 		arg: function(view, arg){
-			if (arg && (is.val(arg) || arg.render))
-				return view.children(arg);
+			// console.log('view.set arg', arg, arg.render);
+			if (arg && (is.val(arg) || arg.render)){
+				// console.log('view.children(arg)');
+				return view.children.set(arg);
+			}
 			else 
 				return set.$oo.arg(view, arg);
 		}
-	},
-	init: function(){
-		this.initView();
-	},
-	initView: function(){
-		// this.children = Coll();
-		// this.attr = Coll();
-		// this.classes = Coll();
 	},
 	addClass: function(c){
 		this.classes.push(c);
@@ -103,6 +111,15 @@ var view = sfn({
 		this.$el = $("<" + this.tag + ">").addClass(this.classes.join(" "));
 		this.children.rendr();
 		return this.$el;
+	},
+	log: function(){
+		console.group(this.__id);
+			if (this.value){
+				console.log(this.value);
+			} else {
+				this.children.log();
+			}
+		console.groupEnd();
 	}
 });
 

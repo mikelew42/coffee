@@ -2,7 +2,9 @@ var is = require("../is");
 var coll = require("../coll");
 
 var q = coll({
+	__id: "q",
 	factory: true,
+	adopt: true,
 	main: "append",
 	exec: function(){
 		var args = arguments;

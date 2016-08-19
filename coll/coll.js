@@ -17,11 +17,11 @@ var item = sfn({
 
 		this.alias();
 
-		this.i = this.$parent.items.push(this) - 1;
+		this.i = this.$parent.push(this) - 1;
 	},
 	alias: function(){
-		if (this._name){
-			this.$parent[this._name] = this;
+		if (this._name && this.$coll){
+			this.$coll[this._name] = this;
 		}
 	}
 });
@@ -32,6 +32,15 @@ var coll = sfn({
 	main: "append",
 	items: [],
 	item: item,
+	init: function(){
+		this.reAlias();
+	},
+	reAlias: function(){
+		this.eachItem(function(itm){
+			itm.$coll = this;
+			itm.alias();
+		});
+	},
 	appendDictionary: function(dict){
 		for (var i in dict){
 			this.appendNamed(i, dict[i]);
@@ -40,21 +49,27 @@ var coll = sfn({
 	appendNamed: function(name, value){
 		this.item.copy({
 			value: value,
-			$parent: this,
+			$parent: this.items,
+			$coll: this,
 			_name: name
 		});
 	},
 	appendAnonymous: function(value){
 		this.item.copy({
 			value: value,
-			$parent: this
+			$parent: this.items,
+			$coll: this
 		})
 	},
 	append: function(value){
-		if (is.obj(value)){
-			return this.appendDictionary(value);
-		} else {
-			return this.appendAnonymous(value);
+		var arg;
+		for (var i = 0; i < arguments.length; i++){
+			arg = arguments[i]
+			if (is.obj(arg)){
+				this.appendDictionary(arg);
+			} else {
+				this.appendAnonymous(arg);
+			}
 		}
 	},
 	each: function(iterator){

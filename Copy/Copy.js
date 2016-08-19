@@ -22,8 +22,18 @@ var copy = function(value, base, skip){
 	
 	base = base || getBase(value);
 
+	if (value.init){
+		if (value.init.copy){
+			base.init = value.init.copy({
+				$parent: base
+			});
+		} else {
+			base.init = value.init
+		}
+	}
+
 	for (var i in value){
-		if (i[0] === "$")
+		if (i[0] === "$" || i == "init")
 			continue;
 		
 		/* Note, this only works for modules, that have a .set method */

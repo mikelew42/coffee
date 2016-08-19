@@ -2,6 +2,7 @@ var then = require("../then");
 var sfn = require("../sfn");
 
 var init = sfn({
+	__id: "init",
 	factory: true,
 	then: then(),
 	adopt: true,
@@ -19,7 +20,9 @@ var init = sfn({
 		obj: function(init, obj){
 			var args = {};
 			for (var i in obj){
-				if (!init.then[i]){
+				if (i[0] === "$"){
+					init[i] = obj[i];
+				} else if (!init.then[i]){
 					// add new cb
 					args[i] = obj[i];
 					init.then(args);
