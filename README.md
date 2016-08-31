@@ -30,39 +30,31 @@ Think of everything as simple objects that can be copied.
 
  | the old way | the new way
 --- | --- | ---
-Creating an instance | `myModule = new Module()` | `myModule = Module.copy()`
 Creating a class | `MyClass = function(){};` | `MyClass = Module.copy()` 
+Creating an instance | `myModule = new MyClass()` | `myModule = MyClass.copy()`
 
-Create an instance or a module in the same way: `Module.copy();`.  Everything is just an object that can be copied.  For convenience, pass an object with new properties to the `.copy()` method:
-
-```
-myModule = Module.copy({
-  prop: 123,
-  init: function(){}, // like a constructor
-  method: function(){}
-});
-```
-
-Or, create a "class"
+For example, to make a `User` class, just copy the base `Module`:
 
 ```
 User = Module.copy({
+  init: function(){
+    this.greet();
+  },
   greet: function(){
     console.log('Hello, ' + this.name);
   }
 });
 ```
 
-and use it:
+To make an "instance" of the `User` "class"?  Just copy it:
 
 ```
 user = User.copy({
   name: "Michael"
-});
-user.greet();
+}); // logs "Hello, Michael"
 ```
 
-And "extend" the `User` "class":
+And to "extend" the `User` "class"?  Just copy it:
 
 ```
 Admin = User.copy({
@@ -70,7 +62,7 @@ Admin = User.copy({
 });
 ```
 
-And how do we use the `Admin` "class"?  Just copy it:  `admin = Admin.copy();`
+FYI, [`Infinity` is real.](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Infinity)
 
 
 ### Support for sub modules
