@@ -33,7 +33,7 @@ Think of everything as simple objects that can be copied.
 Creating a class | `MyClass = function(){};` | `MyClass = Module.copy()` 
 Creating an instance | `myModule = new MyClass()` | `myModule = MyClass.copy()`
 
-For example, to make a `User` class, just copy the base `Module`:
+For example, to make a `User` "class", just copy the base `Module`:
 
 ```
 User = Module.copy({
@@ -64,8 +64,36 @@ Admin = User.copy({
 
 FYI, [`Infinity` is real.](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Infinity)
 
+Instead of "objects", let's call them "modules".
 
-### Support for sub modules
+### Sub modules
+
+What if we wanted to nest a few modules?
+
+```
+car = Car.copy({
+  driver: Driver.copy({
+    name: "Michael",
+    car: car
+  })
+});
+```
+
+Oops, that won't work.  `Driver.copy()` is called first, and `car` is still `undefined`.  So we add
+
+```
+car.driver.car = car;
+```
+
+Which effectively does the same thing.  And now we can access the `car` from inside a `Driver.method()` using `this.car`:
+
+```
+Driver.drive = function(){
+  this.car.accelerate();
+};
+```
+
+And inside the car, we can access the driver using `this.driver`.  And that's good.  Until we try to copy something.
 
 With all other JavaScript approaches I've seen, there's very poor support for composition (nesting objects).  In order to do this, you need to create the child module instance inside the parent module's initialization, and pass a reference to the child, so the child can access the parent.
 
