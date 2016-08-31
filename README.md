@@ -24,7 +24,7 @@ This repo consists of several very basic modules that attempt to replace the tra
 - `then` (an implementation of the q, so any module can do `mod.then(cb)`)
 - `init` (the long-awaited starting point for modules... this is complicated too)
 
-### Just copy everything
+### "Just copy it"
 
 Think of everything as simple objects that can be copied.  
 
@@ -62,11 +62,26 @@ Admin = User.copy({
 });
 ```
 
-FYI, [`Infinity` is real.](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Infinity)
-
 Instead of "objects", let's call them "modules".
 
 ### Sub modules
+
+If we want to nest modules (known as `composition`), our copy algorithm makes it easy:
+
+```
+Car = Module({
+  name: "Xterra",
+  driver: Driver.copy({
+    name: "Michael
+  });
+});
+```
+
+There are several things that need to happen:
+- The sub module needs a reference to its parent.  We use the `$parent` property, so inside the `Driver.methods()`, we can use `this.$parent` to access the car.
+- When copying the Driver, the `$parent` property should not be copied.
+
+The driver access the car via `this.$parent`
 
 What if we wanted to nest a few modules?
 
@@ -88,12 +103,19 @@ car.driver.car = car;
 Which effectively does the same thing.  And now we can access the `car` from inside a `Driver.method()` using `this.car`:
 
 ```
-Driver.drive = function(){
-  this.car.accelerate();
-};
+Driver = Module.copy({
+  drive: function(){
+    this.car.accelerate();
+  }
+});
 ```
 
-And inside the car, we can access the driver using `this.driver`.  And that's good.  Until we try to copy something.
+Likewise, inside the `car` we can access the driver using `this.driver`.  And that's good.  Until we try to copy something.
+
+- We don't want to copy references.
+- But, we don't want to reassign them either
+- We need to copy these direct children
+- But not just copy them, we need to relink the references
 
 With all other JavaScript approaches I've seen, there's very poor support for composition (nesting objects).  In order to do this, you need to create the child module instance inside the parent module's initialization, and pass a reference to the child, so the child can access the parent.
 
