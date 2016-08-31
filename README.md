@@ -24,57 +24,76 @@ This repo consists of several very basic modules that attempt to replace the tra
 - `then` (an implementation of the q, so any module can do `mod.then(cb)`)
 - `init` (the long-awaited starting point for modules... this is complicated too)
 
-Traditionally, you might have
+### Just copy everything
+
+Think of everything as simple objects that can be copied.  
+
+ | the old way | the new way
+--- | --- | ---
+Creating a class | `MyClass = function(){};` | `MyClass = Module.copy()` 
+Creating an instance | `myModule = new MyClass()` | `myModule = MyClass.copy()`
+
+For example, to make a `User` "class", just copy the base `Module`:
 
 ```
-MyConstructor.prototype.prop = ...
-```
-
-and
-
-```
-var myInstance = new MyConstructor();
-```
-
-Instead of having separate instance, constructor, and prototype, let's combine them into a single object (let's call it a module).
-
-Instead of using `new Constructor()` and `Constructor.prototype = ...`, just create an object, and copy it.  When you need to "extend the class", just copy the object.  All objects are prototypes, and can be copied to crete a new class, or a new instance (there's little difference).
-
-```javascript
-myMod = mod.copy({
-  prop: 5,
-  init: function(){},
-  method: function(){}
+User = Module.copy({
+  init: function(){
+    this.greet();
+  },
+  greet: function(){
+    console.log('Hello, ' + this.name);
+  }
 });
 ```
 
-myMod is a working "instance".  It runs `init` automatically each time its copied, as with `new Constructor()`.  It also takes the place of a prototype - anything you add the module gets copied.  If you want another instance, just copy it:
+To make an "instance" of the `User` "class"?  Just copy it:
 
-```javascript
-mySecondMod = myMod.copy({
-  prop: 6,
-  newMethod: function(){}
+```
+user = User.copy({
+  name: "Michael"
+}); // logs "Hello, Michael"
+```
+
+And to "extend" the `User` "class"?  Just copy it:
+
+```
+Admin = User.copy({
+  permissions: Infinity
 });
 ```
 
-If you want to extend the "class"... **just copy it**:
+FYI, [`Infinity` is real.](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Infinity)
 
-```javascript
-MyClass = mod.copy({});
-ExtendsMyClass = MyClass.copy({});
+Instead of "objects", let's call them "modules".
+
+### Sub modules
+
+What if we wanted to nest a few modules?
+
+```
+car = Car.copy({
+  driver: Driver.copy({
+    name: "Michael",
+    car: car
+  })
+});
 ```
 
-> TL;DR One drawback is that properties are duplicated (as opposed to prototypes, where they are shared in memory), but this isn't really a problem.  Functions can't easily be copied, so we just reassign them, and the new reference is negligible.  Objects get deep copied by default, but we usually want this behavior anyway.  I suppose if you had a lot of long string properties on your class definitions, then yes, we are duplicating them in memory.  But how often do you store long strings on your class definitions?  ES6 doesn't even allow properties of any kind (only functions/"methods") on its class definitions.
+Oops, that won't work.  `Driver.copy()` is called first, and `car` is still `undefined`.  So we add
 
-A few important caveats about the copy algorithm:
-- It skips any property that starts with "$", such as "$parent" (you'll see this in the codes)
-- The object oriented version of copy (appearing on a module as `mod.copy`) calls newCopy.set() and newCopy.init(), whereas the standalone version does not
-- Both the standalone and object oriented version check if a module has its own `.copy` method, and uses that, if present.
-- The copy algorithm checks if `this[child].$parent === this`, in which case its a direct child, and should be copied.  The new copy should 
-- If the child property has a different `$parent`, then it has already been adopted, and we don't want to copy it.  Sometimes we might want to reassign the reference, sometimes not (because we'll pass in a new, dynamic reference to replace it).  I haven't figured that part out yet ;)
+```
+car.driver.car = car;
+```
 
+Which effectively does the same thing.  And now we can access the `car` from inside a `Driver.method()` using `this.car`:
 
-### Support for sub modules
+```
+Driver.drive = function(){
+  this.car.accelerate();
+};
+```
+
+And inside the car, we can access the driver using `this.driver`.  And that's good.  Until we try to copy something.
 
 With all other JavaScript approaches I've seen, there's very poor support for composition (nesting objects).  In order to do this, you need to create the child module instance inside the parent module's initialization, and pass a reference to the child, so the child can access the parent.
 
