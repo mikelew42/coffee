@@ -26,14 +26,14 @@ This repo consists of several very basic modules that attempt to replace the tra
 
 ### Just copy everything
 
-Think of everything as an object that can be copied.  
+Think of everything as simple objects that can be copied.  
 
  | the old way | the new way
 --- | --- | ---
 Creating an instance | `myModule = new Module()` | `myModule = Module.copy()`
 Creating a class | `MyClass = function(){};` | `MyClass = Module.copy()` 
 
-Now, creating an instance and a class are both the same (`Module.copy();`).  Everything is just an object that can be copied.  For convenience, pass an object with new properties to the `.copy()` method:
+Create an instance or a module in the same way: `Module.copy();`.  Everything is just an object that can be copied.  For convenience, pass an object with new properties to the `.copy()` method:
 
 ```
 myModule = Module.copy({
