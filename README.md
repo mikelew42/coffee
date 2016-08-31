@@ -24,25 +24,40 @@ This repo consists of several very basic modules that attempt to replace the tra
 - `then` (an implementation of the q, so any module can do `mod.then(cb)`)
 - `init` (the long-awaited starting point for modules... this is complicated too)
 
-### A quick introduction
+### Just copy everything
 
-Programs are overwhelming and unmanageable.  Object oriented programming aims to help, but so many are turning away from it, due to some of its implementation issues.   What if we implement objects and inheritance ourselves?
+The simplest implementation of object oriented programming and inheritance:  `obj.copy()`.  The best way to understand is to look at some code.  Don't worry, these are the simplest examples you'll ever see.
 
-Instead of
+##### Creating an instance
+
+Instead of 
 
 ```
-MyConstructor = function(){};
-MyConstructor.prototype.prop = 123;
-myInstance = new MyConstructor();
+myModule = new Module()
 ```
 
-How about the simplest inheritance system ever:  just copy everything.
+just do
+
+```
+myModule = Module.copy()
+``` 
+
+##### Creating a class
+
+Instead of 
+
+```
+MyClass = function(){};
+MyClass.prototype.prop = 123;
+```
+
+just do
 
 ```
 myModule = Module.copy(); // recursively copies all of Module's properties
 ```
 
-and pass in some additions/overrides:
+We could pass in some additions/overrides:
 
 ```
 myModule = Module.copy({
@@ -51,6 +66,8 @@ myModule = Module.copy({
   method: function(){}
 });
 ```
+
+
 
 Or, "extend" the "class":
 
