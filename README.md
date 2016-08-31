@@ -24,54 +24,53 @@ This repo consists of several very basic modules that attempt to replace the tra
 - `then` (an implementation of the q, so any module can do `mod.then(cb)`)
 - `init` (the long-awaited starting point for modules... this is complicated too)
 
-Traditionally, you might have
+### A quick introduction
+
+Programs are overwhelming and unmanageable.  Object oriented programming aims to help, but so many are turning away from it, due to some of its implementation issues.   What if we implement objects and inheritance ourselves?
+
+Instead of
 
 ```
-MyConstructor.prototype.prop = ...
+MyConstructor = function(){};
+MyConstructor.prototype.prop = 123;
+myInstance = new MyConstructor();
 ```
 
-and
+How about the simplest inheritance system ever:  just copy everything.
 
 ```
-var myInstance = new MyConstructor();
+myModule = Module.copy(); // recursively copies all of Module's properties
 ```
 
-Instead of having separate instance, constructor, and prototype, let's combine them into a single object (let's call it a module).
+and pass in some additions/overrides:
 
-Instead of using `new Constructor()` and `Constructor.prototype = ...`, just create an object, and copy it.  When you need to "extend the class", just copy the object.  All objects are prototypes, and can be copied to crete a new class, or a new instance (there's little difference).
-
-```javascript
-myMod = mod.copy({
-  prop: 5,
-  init: function(){},
+```
+myModule = Module.copy({
+  prop: 123,
+  init: function(){}, // like a constructor
   method: function(){}
 });
 ```
 
-myMod is a working "instance".  It runs `init` automatically each time its copied, as with `new Constructor()`.  It also takes the place of a prototype - anything you add the module gets copied.  If you want another instance, just copy it:
+Or, "extend" the "class":
 
-```javascript
-mySecondMod = myMod.copy({
-  prop: 6,
-  newMethod: function(){}
+```
+User = Module.copy({
+  greet: function(){
+    console.log('Hello, ' + this.name);
+  }
 });
 ```
 
-If you want to extend the "class"... **just copy it**:
+and use it:
 
-```javascript
-MyClass = mod.copy({});
-ExtendsMyClass = MyClass.copy({});
+```
+user = User.copy({
+  name: "Michael"
+});
 ```
 
-> TL;DR One drawback is that properties are duplicated (as opposed to prototypes, where they are shared in memory), but this isn't really a problem.  Functions can't easily be copied, so we just reassign them, and the new reference is negligible.  Objects get deep copied by default, but we usually want this behavior anyway.  I suppose if you had a lot of long string properties on your class definitions, then yes, we are duplicating them in memory.  But how often do you store long strings on your class definitions?  ES6 doesn't even allow properties of any kind (only functions/"methods") on its class definitions.
 
-A few important caveats about the copy algorithm:
-- It skips any property that starts with "$", such as "$parent" (you'll see this in the codes)
-- The object oriented version of copy (appearing on a module as `mod.copy`) calls newCopy.set() and newCopy.init(), whereas the standalone version does not
-- Both the standalone and object oriented version check if a module has its own `.copy` method, and uses that, if present.
-- The copy algorithm checks if `this[child].$parent === this`, in which case its a direct child, and should be copied.  The new copy should 
-- If the child property has a different `$parent`, then it has already been adopted, and we don't want to copy it.  Sometimes we might want to reassign the reference, sometimes not (because we'll pass in a new, dynamic reference to replace it).  I haven't figured that part out yet ;)
 
 
 ### Support for sub modules
