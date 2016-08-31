@@ -26,9 +26,11 @@ describe("view", function(){
 	});
 
 	it("should render a jQuery element as it's .$el", function(){
-		var v = view("Hello");
+		var v = view("Hello" );
+		// var v = view({ children: "Hello" });
 
 		expect(v.children.$parent).toBe(v);
+		// v.log();
 
 		v.render().appendTo("body");
 
@@ -145,6 +147,17 @@ describe("view", function(){
 			if (item._name)
 				expect(v2[item._name]).toBe(item.value);
 		});
+	});
+
+	it("children should have a remove method", function(){
+		var v = view({
+			children: {
+				one: view("one"),
+				two: view("two")
+			}
+		});
+
+		v.render().appendTo('body');
 	});
 
 	xit("can be rendered in several different ways", function(){

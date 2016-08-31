@@ -73,6 +73,7 @@ var set = sfn(function(mod){
 	},
 	stdProp: function(mod, i, obj){
 		// is this even tested?  I think mod.set should be "this", so this will always be false
+			// no, this could be the standalone, and the mod could have its own mod.set....?
 		if (mod.set && mod.set.stdProp && mod.set.stdProp !== this.stdProp)
 			return mod.set.stdProp(mod, i, obj);
 
@@ -101,49 +102,49 @@ var set = sfn(function(mod){
 });
 
 // this sfn is ssfn, and will not adopt!!!
-var setOO = sfn(function(){
-	for (var i = 0; i < arguments.length; i++){
-		this.arg(arguments[i]);
-	}
-	return this.$parent || this;
-}, {
-	__id: "setOO",
-	init: function(){
-		if (this.$parent)
-			this.mod = this.$parent;
-	},
-	arg: function(arg){
-		if (is.obj(arg))
-			this.obj(arg);
-		else if (is.fn(arg))
-			this.fn(arg);
-		else if (is.str(arg))
-			this.str(arg);
-		else
-			console.warn("not sure how to set:", arg);
-	},
-	obj: function(objArg){
-		for (var i in objArg){
-			this.prop(i, objArg);
-		}
-	},
-	prop: sfn(function(propName, objArg){
-		var newValue = objArg[propName];
-		// if (is.undef(this.mod[propName]))
-	}, {
-		// adopt: true, // won't work on ssfn
-		init: function(){
-			if (this.$parent)
-				this.mod = this.$parent.mod;
-		},
-		und: sfn(function(propName, objArg){
+// var setOO = sfn(function(){
+// 	for (var i = 0; i < arguments.length; i++){
+// 		this.arg(arguments[i]);
+// 	}
+// 	return this.$parent || this;
+// }, {
+// 	__id: "setOO",
+// 	init: function(){
+// 		if (this.$parent)
+// 			this.mod = this.$parent;
+// 	},
+// 	arg: function(arg){
+// 		if (is.obj(arg))
+// 			this.obj(arg);
+// 		else if (is.fn(arg))
+// 			this.fn(arg);
+// 		else if (is.str(arg))
+// 			this.str(arg);
+// 		else
+// 			console.warn("not sure how to set:", arg);
+// 	},
+// 	obj: function(objArg){
+// 		for (var i in objArg){
+// 			this.prop(i, objArg);
+// 		}
+// 	},
+// 	prop: sfn(function(propName, objArg){
+// 		var newValue = objArg[propName];
+// 		// if (is.undef(this.mod[propName]))
+// 	}, {
+// 		// adopt: true, // won't work on ssfn
+// 		init: function(){
+// 			if (this.$parent)
+// 				this.mod = this.$parent.mod;
+// 		},
+// 		und: sfn(function(propName, objArg){
 
-		})
+// 		})
 
-	})
-});
+// 	})
+// });
 
-setOO.prop.$parent = setOO;
+// setOO.prop.$parent = setOO;
 
 set.$oo = set.copy(function(){
 	for (var i = 0; i < arguments.length; i++){

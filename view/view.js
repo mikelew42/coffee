@@ -8,7 +8,32 @@ var init = require("../init");
 var $ = require("jquery");
 
 var childViewItem = coll.item.copy({
-	__id: "childViewItem"
+	__id: "childViewItem",
+	remove: function(){
+		var index;
+
+		if (this.$coll){
+
+			// remove from children coll's items array
+			index = this.$coll.items.indexOf(this);
+			this.$coll.items.splice(index, 1);
+
+			// remove aliases from children coll and view
+			if (this._name){
+
+				// delete reference from children coll
+				if (this.$coll[this._name]){
+					delete this.$coll[this._name];
+				}
+
+				// delete reference from children coll's parent (view)
+				if (this.$coll.$parent[this._name]){
+					delete this.$coll.$parent[this._name];
+				}
+				
+			}
+		}
+	}
 });
 
 var children = coll({
@@ -52,7 +77,37 @@ var children = coll({
 			if (is.undef(children.$parent.value))
 				children.$parent.value = val;
 			children.append(val);
+		},
+		stdProp: function(children, i, obj){
+			var value = obj[i];
+
+			if (i[0] !== "$" && is.fn(value)){
+				if (value.tag){
+					children.appendNamed(i, value);
+					children.$parent[i] = value;
+					value.$parent = children.$parent;
+					return;
+				}
+			}
+
+			children[i] = obj[i];
+			this.adopt(children, i);
 		}
+	},
+	reset: function(){
+		this.removeAll();
+	},
+	removeAll: function(){
+		this.each(function(child, name){
+			if (this[name] === child)
+				delete this[name];
+			
+			if (this.$parent[name] === child.value)
+				delete this.$parent[name];
+
+			// any other cleanup? maybe the item should do this itself
+
+		})
 	},
 	rendr: function rendr(){
 		this.each(function(child, name, index){
