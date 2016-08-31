@@ -26,38 +26,14 @@ This repo consists of several very basic modules that attempt to replace the tra
 
 ### Just copy everything
 
-The simplest implementation of object oriented programming and inheritance:  `obj.copy()`.  The best way to understand is to look at some code.  Don't worry, these are the simplest examples you'll ever see.
+Think of everything as an object that can be copied.  
 
-##### Creating an instance
+ | the old way | the new way
+--- | --- | ---
+Creating an instance | `myModule = new Module()` | `myModule = Module.copy()`
+Creating a class | `MyClass = function(){};` | `MyClass = Module.copy()` 
 
-Instead of 
-
-```
-myModule = new Module()
-```
-
-just do
-
-```
-myModule = Module.copy()
-``` 
-
-##### Creating a class
-
-Instead of 
-
-```
-MyClass = function(){};
-MyClass.prototype.prop = 123;
-```
-
-just do
-
-```
-myModule = Module.copy(); // recursively copies all of Module's properties
-```
-
-We could pass in some additions/overrides:
+Now, creating an instance and a class are both the same (`Module.copy();`).  Everything is just an object that can be copied.  For convenience, pass an object with new properties to the `.copy()` method:
 
 ```
 myModule = Module.copy({
@@ -67,9 +43,7 @@ myModule = Module.copy({
 });
 ```
 
-
-
-Or, "extend" the "class":
+Or, create a "class"
 
 ```
 User = Module.copy({
@@ -85,9 +59,18 @@ and use it:
 user = User.copy({
   name: "Michael"
 });
+user.greet();
 ```
 
+And "extend" the `User` "class":
 
+```
+Admin = User.copy({
+  permissions: Infinity
+});
+```
+
+And how do we use the `Admin` "class"?  Just copy it:  `admin = Admin.copy();`
 
 
 ### Support for sub modules
